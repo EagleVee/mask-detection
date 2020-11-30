@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/observations.iml" filepath="$PROJECT_DIR$/.idea/observations.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/mask-detection.iml" filepath="$PROJECT_DIR$/.idea/mask-detection.iml" />
     </modules>
   </component>
 </project>

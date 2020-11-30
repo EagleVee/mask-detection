@@ -2,6 +2,7 @@
 # coding: utf-8
 
 import torch
+import sys
 import torch.nn as nn
 import torch.optim as optim
 from torch.optim import lr_scheduler
@@ -20,7 +21,7 @@ from PIL import Image
 import glob
 import cv2
 
-filepath = 'mask1_model_resnet50.pth'
+filepath = '../model/mask1_model_resnet101.pth'
 model = torch.load(filepath)
 
 class_names = ['with_mask',
