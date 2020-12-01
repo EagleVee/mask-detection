@@ -21,7 +21,7 @@ from PIL import Image
 import glob
 import cv2
 
-filepath = '../model/mask1_model_resnet101.pth'
+filepath = 'model/mask1_model_resnet101.pth'
 model = torch.load(filepath)
 
 class_names = ['with_mask',

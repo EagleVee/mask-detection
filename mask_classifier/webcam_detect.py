@@ -16,11 +16,11 @@ font = cv2.FONT_HERSHEY_COMPLEX_SMALL
 score = 0
 thicc = 2
 # faces = face.detectMultiScale(gray,minNeighbors=5,scaleFactor=1.1,minSize=(25,25))
-while (True):
+while True:
     ret, frame = cap.read()
     height, width = frame.shape[:2]
     label = classify_face(frame)
-    if (label == 'with_mask'):
+    if label == 'with_mask':
         print("No Beep")
     else:
         sound.play()
