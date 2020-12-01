@@ -2,39 +2,20 @@
 # coding: utf-8
 
 import torch
-import sys
-import torch.nn as nn
-import torch.optim as optim
-from torch.optim import lr_scheduler
-import numpy as np
-import torchvision
 from torchvision import datasets, models, transforms
-import matplotlib.pyplot as plt
-import time
-import os
-import pandas as pd
-from sklearn.model_selection import train_test_split
-import shutil
-import time
-import copy
 from PIL import Image
-import glob
 import cv2
 
 filepath = 'model/mask1_model_resnet101.pth'
 model = torch.load(filepath, map_location=torch.device('cpu'))
+cascPath = 'haarcascade_frontalface_default.xml'
+faceCascade = cv2.CascadeClassifier(cascPath)
+font = cv2.FONT_HERSHEY_COMPLEX_SMALL
 
-class_names = ['with_mask',
-               'without_mask'
-               ]
+class_names = ['with_mask', 'without_mask']
 
 
 def process_image(image):
-    ''' Scales, crops, and normalizes a PIL image for a PyTorch model,
-        returns an Numpy array
-    '''
-
-    # TODO: Process a PIL image for use in a PyTorch model
     # pil_image = Image.open(image)
     pil_image = image
 
@@ -52,8 +33,6 @@ def process_image(image):
 def classify_face(image):
     device = torch.device("cpu")
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    # im_pil = image.fromarray(image)
-    # image = np.asarray(im)
     im = Image.fromarray(image)
     image = process_image(im)
     print('image_processed')
@@ -63,18 +42,37 @@ def classify_face(image):
     model.eval()
     model.cpu()
     output = model(image)
-    print(output, '##############output###########')
     _, predicted = torch.max(output, 1)
-    print(predicted.data[0], "predicted")
 
     classification1 = predicted.data[0]
     index = int(classification1)
-    print(class_names[index])
+    print('PREDICTED ', class_names[index])
     return class_names[index]
 
 
 if __name__ == '__main__':
     # map_location=torch.device('cpu')
-    image = cv2.imread('10.jpg')
-    label = classify_face(image)
-    print("the label is", label)
+    image = cv2.imread('crowd_image_2.jpg')
+    print('processed image', image)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # Lấy ra vị trí khuôn mặt
+    faces = faceCascade.detectMultiScale(
+        gray,
+        scaleFactor=1.1,
+        minNeighbors=5,
+        minSize=(30, 30)
+    )
+
+    for (x, y, w, h) in faces:
+        cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        cropped_face = image[y: y + h, x: x + w]
+
+        # Cho model detect, trả về "with_mask" hoặc "without_mask"
+        label = classify_face(cropped_face)
+        cv2.putText(image, str(label), (int(x), int(y - 10)), font, 0.5, (0, 255, 0), 1, cv2.LINE_AA)
+
+    cv2.imshow('Result', image)
+    cv2.waitKey(0)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        cv2.destroyAllWindows()
