@@ -75,6 +75,6 @@ def classify_face(image):
 
 if __name__ == '__main__':
     # map_location=torch.device('cpu')
-    image = cv2.imread('praj.jpg')
+    image = cv2.imread('test_image.jpg')
     label = classify_face(image)
     print("the label is", label)
