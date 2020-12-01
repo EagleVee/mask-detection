@@ -22,7 +22,7 @@ import glob
 import cv2
 
 filepath = 'model/mask1_model_resnet101.pth'
-model = torch.load(filepath)
+model = torch.load(filepath, map_location=torch.device('cpu'))
 
 class_names = ['with_mask',
                'without_mask'
@@ -75,6 +75,6 @@ def classify_face(image):
 
 if __name__ == '__main__':
     # map_location=torch.device('cpu')
-    image = cv2.imread('test_image.jpg')
+    image = cv2.imread('10.jpg')
     label = classify_face(image)
     print("the label is", label)
