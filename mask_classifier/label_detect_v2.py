@@ -3,24 +3,27 @@ import cv2
 import random
 
 filepath = 'model/mask1_model_resnet101.pth'
-face_casc_path = 'haarcascade_frontalface_default.xml'
-eye_casc_path = 'haarcascade_eye.xml'
-mouth_casc_path = 'haarcascade_mcs_mouth.xml'
-upper_body_casc_path = 'haarcascade_upperbody.xml'
+face_casc_path = 'cascades/haarcascade_frontalface_default.xml'
+face_alt_casc_path = 'cascades/haarcascade_frontalface_alt.xml'
+face_alt_2_casc_path = 'cascades/haarcascade_frontalface_alt2.xml'
+eye_casc_path = 'cascades/haarcascade_eye.xml'
+mouth_casc_path = 'cascades/haarcascade_mcs_mouth.xml'
+nose_casc_path = 'cascades/nose.xml'
 
 faceCascade = cv2.CascadeClassifier(face_casc_path)
+faceAltCascade = cv2.CascadeClassifier(face_alt_casc_path)
+faceAlt2Cascade = cv2.CascadeClassifier(face_alt_2_casc_path)
 eyeCascade = cv2.CascadeClassifier(eye_casc_path)
 mouthCascade = cv2.CascadeClassifier(mouth_casc_path)
-upperBodyCascade = cv2.CascadeClassifier(upper_body_casc_path)
+noseCascade = cv2.CascadeClassifier(nose_casc_path)
 font = cv2.FONT_HERSHEY_COMPLEX_SMALL
 
 
 def classify_face(image):
     mouths = mouthCascade.detectMultiScale(
         image,
-        scaleFactor=1.1,
-        minNeighbors=5,
-        minSize=(30, 30)
+        scaleFactor=1.3,
+        minNeighbors=5
     )
 
     if len(mouths) == 0:
@@ -35,15 +38,36 @@ def detect_mask(image):
         gray,
         scaleFactor=1.1,
         minNeighbors=5,
-        minSize=(30, 30)
+        minSize=(15, 15)
     )
 
     for (x, y, w, h) in faces:
         cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
         cropped_face = gray[y: y + h, x: x + w]
 
-        # Trả về "with_mask" hoặc "without_mask"
-        label = classify_face(cropped_face)
+        mouths = mouthCascade.detectMultiScale(
+            cropped_face,
+            scaleFactor=1.3
+        )
+
+        noses = noseCascade.detectMultiScale(
+            cropped_face,
+            scaleFactor=1.05
+        )
+        #
+        # for (mx, my, mw, mh) in mouths:
+        #     cv2.rectangle(image, (x + mx, y + my), (x + mx + mw, y + my + mh), (255, 0, 0), 1)
+        #
+        # for (nx, ny, nw, nh) in noses:
+        #     cv2.rectangle(image, (x + nx, y + ny), (x + nx + nw, y + ny + nh), (0, 0, 255), 1)
+
+        if len(mouths) == 0 and len(noses) == 0:
+            label = 'with_mask'
+        else:
+            label = 'without_mask'
+
+        print('PREDICTED', label)
+
         cv2.putText(image, str(label), (int(x), int(y - 10)), font, 0.5, (0, 255, 0), 1, cv2.LINE_AA)
 
     return image
