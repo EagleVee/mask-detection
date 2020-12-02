@@ -1,17 +1,10 @@
 import cv2
-import os
-from keras.models import load_model
-import numpy as np
-import time
-import sys
 from label_detect import classify_face
 
 cascPath = 'haarcascade_frontalface_default.xml'
 faceCascade = cv2.CascadeClassifier(cascPath)
 cap = cv2.VideoCapture(0)
 font = cv2.FONT_HERSHEY_COMPLEX_SMALL
-score = 0
-thicc = 2
 while True:
     ret, frame = cap.read()
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -26,10 +19,9 @@ while True:
     for (x, y, w, h) in faces:
         cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
         cropped_face = frame[y: y+h, x: x + w]
-
         # Cho model detect, trả về "with_mask" hoặc "without_mask"
         label = classify_face(cropped_face)
-        cv2.putText(frame, str(label), (int(x), int(y / 2)), font, 1, (0, 255, 0), 1, cv2.LINE_AA)
+        cv2.putText(frame, str(label), (int(x), int(y - 10)), font, 1, (0, 255, 0), 1, cv2.LINE_AA)
 
     cv2.imshow('Mask Detector', frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
