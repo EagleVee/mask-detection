@@ -5,9 +5,13 @@ import torch
 from torchvision import datasets, models, transforms
 from PIL import Image
 import cv2
+import time
 
 filepath = 'model/mask1_model_resnet101.pth'
 model = torch.load(filepath, map_location=torch.device('cpu'))
+model.eval()
+model.cpu()
+device = torch.device("cpu")
 cascPath = 'haarcascade_frontalface_default.xml'
 faceCascade = cv2.CascadeClassifier(cascPath)
 font = cv2.FONT_HERSHEY_COMPLEX_SMALL
@@ -31,27 +35,23 @@ def process_image(image):
 
 
 def classify_face(image):
-    device = torch.device("cpu")
+    print('START', time.time())
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     im = Image.fromarray(image)
     image = process_image(im)
-    print('image_processed')
     img = image.unsqueeze_(0)
     img = image.float()
-
-    model.eval()
-    model.cpu()
     output = model(image)
     _, predicted = torch.max(output, 1)
 
     classification1 = predicted.data[0]
     index = int(classification1)
     print('PREDICTED ', class_names[index])
+    print('END', time.time())
     return class_names[index]
 
 
 if __name__ == '__main__':
-    # map_location=torch.device('cpu')
     image = cv2.imread('crowd_image_2.jpg')
     print('processed image', image)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
