@@ -44,7 +44,7 @@ def cli():
 
 def create_mask(image_path):
     pic_path = image_path
-    mask_path = "/media/preeth/Data/prajna_files/mask_creator/face_mask/images/blue-mask.png"
+    mask_path = "images/blue-mask.png"
     show = False
     model = "hog"
     FaceMasker(pic_path, mask_path, show, model).mask()
