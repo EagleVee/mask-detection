@@ -19,19 +19,6 @@ noseCascade = cv2.CascadeClassifier(nose_casc_path)
 font = cv2.FONT_HERSHEY_COMPLEX_SMALL
 
 
-def classify_face(image):
-    mouths = mouthCascade.detectMultiScale(
-        image,
-        scaleFactor=1.3,
-        minNeighbors=5
-    )
-
-    if len(mouths) == 0:
-        return 'with_mask'
-    else:
-        return 'without_mask'
-
-
 def detect_mask(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     faces = faceCascade.detectMultiScale(
@@ -47,21 +34,27 @@ def detect_mask(image):
 
         mouths = mouthCascade.detectMultiScale(
             cropped_face,
-            scaleFactor=2
+            scaleFactor=2,
+            minNeighbors=5,
+            minSize=(int(w / 3), int(h / 15))
         )
 
-        noses = noseCascade.detectMultiScale(
-            cropped_face,
-            scaleFactor=2
-        )
+        # eyes = eyeCascade.detectMultiScale(
+        #     cropped_face,
+        #     scaleFactor=2,
+        #     minNeighbors=5
+        # )
         #
+        #
+        # for (nx, ny, nw, nh) in eyes:
+        #     if ny > h / 2:
+        #         is_face_reverted = True
+        #         cv2.rectangle(image, (x + nx, y + ny), (x + nx + nw, y + ny + nh), (0, 0, 255), 1)
+
         for (mx, my, mw, mh) in mouths:
             cv2.rectangle(image, (x + mx, y + my), (x + mx + mw, y + my + mh), (255, 0, 0), 1)
-        #
-        for (nx, ny, nw, nh) in noses:
-            cv2.rectangle(image, (x + nx, y + ny), (x + nx + nw, y + ny + nh), (0, 0, 255), 1)
 
-        if len(mouths) == 0 or len(noses) == 0:
+        if len(mouths) == 0:
             label = 'with_mask'
         else:
             label = 'without_mask'
@@ -74,7 +67,7 @@ def detect_mask(image):
 
 
 if __name__ == '__main__':
-    image = cv2.imread('crowd_image.jpg')
+    image = cv2.imread('test_image_without_mask.jpg')
     detected_image = detect_mask(image)
     cv2.imshow('Result', image)
     cv2.waitKey(0)
