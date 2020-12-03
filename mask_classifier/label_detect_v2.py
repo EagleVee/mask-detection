@@ -74,7 +74,7 @@ def detect_mask(image):
 
 
 if __name__ == '__main__':
-    image = cv2.imread('crowd_image_2.jpg')
+    image = cv2.imread('crowd_image.jpg')
     detected_image = detect_mask(image)
     cv2.imshow('Result', image)
     cv2.waitKey(0)

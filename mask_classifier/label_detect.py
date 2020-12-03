@@ -58,7 +58,7 @@ def detect_mask(image):
         gray,
         scaleFactor=1.1,
         minNeighbors=5,
-        minSize=(30, 30)
+        minSize=(15, 15)
     )
 
     for (x, y, w, h) in faces:
