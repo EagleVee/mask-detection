@@ -2,7 +2,6 @@ import numpy as np
 import cv2
 import random
 
-filepath = 'model/mask1_model_resnet101.pth'
 face_casc_path = 'cascades/haarcascade_frontalface_default.xml'
 face_alt_casc_path = 'cascades/haarcascade_frontalface_alt.xml'
 face_alt_2_casc_path = 'cascades/haarcascade_frontalface_alt2.xml'
