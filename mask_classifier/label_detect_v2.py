@@ -47,21 +47,21 @@ def detect_mask(image):
 
         mouths = mouthCascade.detectMultiScale(
             cropped_face,
-            scaleFactor=1.3
+            scaleFactor=2
         )
 
         noses = noseCascade.detectMultiScale(
             cropped_face,
-            scaleFactor=1.05
+            scaleFactor=2
         )
         #
-        # for (mx, my, mw, mh) in mouths:
-        #     cv2.rectangle(image, (x + mx, y + my), (x + mx + mw, y + my + mh), (255, 0, 0), 1)
+        for (mx, my, mw, mh) in mouths:
+            cv2.rectangle(image, (x + mx, y + my), (x + mx + mw, y + my + mh), (255, 0, 0), 1)
         #
-        # for (nx, ny, nw, nh) in noses:
-        #     cv2.rectangle(image, (x + nx, y + ny), (x + nx + nw, y + ny + nh), (0, 0, 255), 1)
+        for (nx, ny, nw, nh) in noses:
+            cv2.rectangle(image, (x + nx, y + ny), (x + nx + nw, y + ny + nh), (0, 0, 255), 1)
 
-        if len(mouths) == 0 and len(noses) == 0:
+        if len(mouths) == 0 or len(noses) == 0:
             label = 'with_mask'
         else:
             label = 'without_mask'
