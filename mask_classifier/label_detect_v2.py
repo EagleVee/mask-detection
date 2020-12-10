@@ -1,6 +1,5 @@
-import numpy as np
 import cv2
-import random
+import label_detect_v3
 
 face_casc_path = 'cascades/haarcascade_frontalface_default.xml'
 face_alt_casc_path = 'cascades/haarcascade_frontalface_alt.xml'
@@ -30,6 +29,7 @@ def detect_mask(image):
     for (x, y, w, h) in faces:
         cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
         cropped_face = gray[y: y + h, x: x + w]
+        cropped_face_color = image[y: y + h, x: x + w]
 
         mouths = mouthCascade.detectMultiScale(
             cropped_face,
@@ -38,27 +38,22 @@ def detect_mask(image):
             minSize=(int(w / 3), int(h / 15))
         )
 
-        # eyes = eyeCascade.detectMultiScale(
+        # noses = noseCascade.detectMultiScale(
         #     cropped_face,
         #     scaleFactor=2,
         #     minNeighbors=5
         # )
         #
-        #
-        # for (nx, ny, nw, nh) in eyes:
-        #     if ny > h / 2:
-        #         is_face_reverted = True
-        #         cv2.rectangle(image, (x + nx, y + ny), (x + nx + nw, y + ny + nh), (0, 0, 255), 1)
+        # for (nx, ny, nw, nh) in noses:
+        #     cv2.rectangle(image, (x + nx, y + ny), (x + nx + nw, y + ny + nh), (0, 0, 255), 1)
 
         for (mx, my, mw, mh) in mouths:
             cv2.rectangle(image, (x + mx, y + my), (x + mx + mw, y + my + mh), (255, 0, 0), 1)
-
-        if len(mouths) == 0:
+        has_mask = label_detect_v3.has_mask(cropped_face_color, w, h)
+        if len(mouths) == 0 and has_mask:
             label = 'with_mask'
         else:
             label = 'without_mask'
-
-        print('PREDICTED', label)
 
         cv2.putText(image, str(label), (int(x), int(y - 10)), font, 0.5, (0, 255, 0), 1, cv2.LINE_AA)
 
@@ -66,7 +61,7 @@ def detect_mask(image):
 
 
 if __name__ == '__main__':
-    image = cv2.imread('test_image_without_mask.jpg')
+    image = cv2.imread('crowd_image.jpg')
     detected_image = detect_mask(image)
     cv2.imshow('Result', image)
     cv2.waitKey(0)
